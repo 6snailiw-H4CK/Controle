@@ -303,7 +303,7 @@ function saveState() {
 /* ==================================================
    AUTENTICAÇÃO & RESET DE USUÁRIOS
    ================================================== */
-const ADMIN_USER = { email: 'admin', pass: '1234', name: 'Administrador' };
+const ADMIN_USER = { email: 'admin', pass: '1570', name: 'Master' };
 
 function toggleAuth(view) {
   document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
@@ -370,9 +370,9 @@ function doRegister() {
 
 /* === NOVO: Função para Resetar Usuários === */
 function resetSystemUsers() {
-  const password = prompt("Digite a senha do Admin (1234) para apagar todos os usuários cadastrados:");
+  const password = prompt("Digite a senha do Admin para apagar todos os usuários cadastrados:");
   
-  if (password === "1234") {
+  if (password === "1570") {
     if(confirm("TEM CERTEZA? Isso excluirá todos os logins criados (exceto o Admin).")) {
       // Remove apenas o banco de usuários
       localStorage.removeItem('boxmotors_users_db');
