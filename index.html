@@ -262,7 +262,7 @@ function showToast(msg) {
 
 function syncToGoogle(payload) {
   if(!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL.includes('COLE_SUA')) return;
-  showToast("Enviando para nuvem...");
+  showToast("Registrando...");
   fetch(GOOGLE_SHEETS_URL, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
