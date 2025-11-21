@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Box Motors — Sistema Integrado</title>
+<title>THE BOX — Gestão Financeira</title>
 <style>
-  :root{ --bg:#0b0b0b; --card:#121212; --accent:#c8102e; --muted:#9aa0a6; --ok:#16a34a; --warn:#eab308; --text: #ffffff; }
+  :root{ --bg:#0b0b0b; --card:#121212; --accent:#c8102e; --muted:#9aa0a6; --ok:#16a34a; --warn:#eab308; --text: #ffffff; --input-bg: #1c1c1c; --input-border: #333; }
   *{box-sizing:border-box}
-  body{ margin:0; font-family:Inter, Arial, sans-serif; background:linear-gradient(180deg,#0f1720 0%, #07101a 100%); color:#fff; -webkit-font-smoothing:antialiased; padding:18px; min-height: 100vh; }
+  body{ margin:0; font-family:Inter, Arial, sans-serif; background:linear-gradient(180deg,#0f1720 0%, #07101a 100%); color:var(--text); -webkit-font-smoothing:antialiased; padding:18px; min-height: 100vh; }
   
   /* Layout */
   header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap: wrap;}
@@ -18,13 +18,26 @@
   label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
   
   /* Inputs */
-  input, select{ width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,.04); background: rgba(255,255,255,0.02); color: var(--text); margin-bottom:10px; outline: none; font-size: 14px; }
-  input:focus, select:focus { border-color: var(--accent); }
+  input, select, textarea { 
+    width:100%; padding:10px; border-radius:8px; 
+    border:1px solid var(--input-border); 
+    background-color: var(--input-bg) !important; 
+    color: var(--text) !important; 
+    margin-bottom:10px; outline: none; font-size: 14px; 
+  }
   
+  input:focus, select:focus { 
+    border-color: var(--accent); 
+    background-color: #252525 !important;
+  }
+  
+  input::placeholder { color: #666; opacity: 1; }
+  select option { background-color: var(--card); color: var(--text); }
+
   /* Buttons */
   button{padding:10px 12px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-weight: 600;}
   button:hover{opacity: 0.9;}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,.06);font-weight: 400;}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,.06);font-weight: 400; color: var(--text);}
   button.link{background:transparent; color:var(--accent); padding:0; font-size:12px; margin-top:10px; text-decoration:underline;}
 
   /* Status Tags */
@@ -35,12 +48,12 @@
 
   /* Lists & Items */
   .list{max-height:360px;overflow:auto;margin-top:10px}
-  .tx, .rec-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,.02), transparent)}
-  .tx .meta, .rec-item .meta{display:flex;gap:10px;align-items:center}
+  .tx, .rec-item{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;margin-bottom:8px;background:linear-gradient(180deg, rgba(255,255,255,.05), transparent)}
+  .tx .meta, .rec-item .meta{display:flex;gap:10px;align-items:center; color: var(--text);}
   .amount{font-weight:700} .income{color:var(--ok)} .expense{color:#ffb86b}
   .small{font-size:12px;color:var(--muted)}
   .summary{display:flex;gap:10px;margin-bottom:8px}
-  .summary .s{flex:1;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,.02), transparent)}
+  .summary .s{flex:1;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,.05), transparent)}
   canvas{width:100%;height:200px;border-radius:8px;background:transparent}
   footer{margin-top:18px;color:var(--muted);font-size:12px;text-align:center}
 
@@ -48,20 +61,57 @@
   #auth-container { position: fixed; top:0; left:0; width:100%; height:100%; background: #07101a; display: flex; justify-content:center; align-items:center; z-index: 9999; }
   .auth-box { width: 100%; max-width: 340px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
   
+  /* CUBO 3D VERMELHO NEON NO LOGIN */
+  .login-cube-container{
+    width:90px;
+    height:90px;
+    margin:16px auto 18px;
+    perspective:800px;
+  }
+  .login-cube{
+    width:100%;
+    height:100%;
+    position:relative;
+    transform-style:preserve-3d;
+    animation:loginCubeRotate 8s infinite linear;
+  }
+  .login-cube .cube-face{
+    position:absolute;
+    width:90px;
+    height:90px;
+    border:2px solid var(--accent);
+    background:rgba(200,16,46,0.12);
+    box-shadow:0 0 22px rgba(200,16,46,0.9);
+  }
+  .login-cube .cube-face:nth-child(1){transform:translateZ(45px);}
+  .login-cube .cube-face:nth-child(2){transform:rotateY(90deg) translateZ(45px);}
+  .login-cube .cube-face:nth-child(3){transform:rotateY(180deg) translateZ(45px);}
+  .login-cube .cube-face:nth-child(4){transform:rotateY(-90deg) translateZ(45px);}
+  .login-cube .cube-face:nth-child(5){transform:rotateX(90deg) translateZ(45px);}
+  .login-cube .cube-face:nth-child(6){transform:rotateX(-90deg) translateZ(45px);}
+  @keyframes loginCubeRotate{
+    0%{transform:rotateX(0deg) rotateY(0deg);}
+    100%{transform:rotateX(360deg) rotateY(360deg);}
+  }
+
   /* UI Helpers */
   .badge-demo{display:inline-block;background:#ffb86b;color:#111;padding:6px 8px;border-radius:6px;font-weight:700;margin-right:8px;font-size:12px;}
   #licenseRow{display:inline-flex;gap:8px;align-items:center}
-  #licenseKey{padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:transparent;color:#fff}
+  #licenseKey{padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--text)}
   #buyBtn{background:#16a34a;padding:8px 10px;border-radius:8px;color:#fff;border:none;cursor:pointer}
   #watermark-demo{position:fixed;right:10px;bottom:10px;padding:8px 12px;background:rgba(200,20,20,0.12);color:#fff;border-radius:8px;font-size:12px;backdrop-filter: blur(4px);}
   
-  /* Light Theme */
-  body[data-theme="light"]{ --bg:#fff; --card:#f6f6f6; --accent:#c8102e; --muted:#6b7280; --ok:#0f766e; --text:#0b1220; color:#0b1220; background:linear-gradient(180deg,#fff 0%, #f7f7f7 100%); }
+  /* Light Theme Config */
+  body[data-theme="light"]{ 
+    --bg:#fff; --card:#f6f6f6; --accent:#c8102e; --muted:#6b7280; --ok:#0f766e; --text:#0b1220; 
+    --input-bg: #ffffff; --input-border: #ccc;
+    color:#0b1220; background:linear-gradient(180deg,#fff 0%, #f7f7f7 100%); 
+  }
   body[data-theme="light"] button.ghost{ border-color: rgba(0,0,0,0.08); color:#0b1220; }
   body[data-theme="light"] #auth-container { background: #ffffff; }
 
   @media(max-width:900px){.grid{grid-template-columns:1fr;}.card{padding:12px}}
-  select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-color: rgba(255,255,255,0.03); color: var(--text) !important; padding-right: 36px; position: relative; }
+  select { -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 36px; position: relative; }
   .month-nav { display:flex;align-items:center;gap:8px }
   .month-nav button { padding:6px 8px; font-size:13px; border-radius:6px }
   
@@ -76,8 +126,22 @@
 
 <div id="toast">Salvando...</div>
 
+<input type="file" id="restoreInput" style="display:none" accept=".json" onchange="processRestore(this)">
+
 <div id="auth-container">
   <div id="login-view" class="card auth-box">
+    <!-- Cubo 3D Vermelho Neon no card de login -->
+    <div class="login-cube-container">
+      <div class="login-cube">
+        <div class="cube-face"></div>
+        <div class="cube-face"></div>
+        <div class="cube-face"></div>
+        <div class="cube-face"></div>
+        <div class="cube-face"></div>
+        <div class="cube-face"></div>
+      </div>
+    </div>
+
     <div style="font-size:24px;font-weight:800;margin-bottom:8px">THE BOX</div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:24px">Gestão Financeira</div>
     <div style="text-align:left">
@@ -90,7 +154,7 @@
       <div style="text-align:center;margin-top:15px">
         <button class="link" onclick="toggleAuth('register')">Criar nova conta</button>
         <br>
-        <button onclick="resetSystemUsers()" class="ghost" style="margin-top:20px; font-size:10px; color:#666; border:none;">
+        <button onclick="resetSystemUsers()" class="ghost" style="margin-top:20px; font-size:10px; color:var(--muted); border:none;">
           ⚠ Resetar Todos os Usuários
         </button>
       </div>
@@ -126,16 +190,43 @@
         <span id="licenseRow">
           <input id="licenseKey" placeholder="Chave" />
           <button onclick="activateLicense()">Ativar</button>
-          <button id="revokeBtn" class="ghost" onclick="revokeLicense()" style="display:none">Resetar</button>
         </span>
       </span>
+      <span id="proMenu" style="display:none; gap:8px; align-items:center">
+         <button id="revokeBtn" class="ghost" onclick="revokeLicense()">Resetar Licença</button>
+      </span>
+
       <button class="ghost" onclick="openRecurring()">📅 Recorrentes</button>
-      <button id="exportCsv">Backup (CSV)</button>
-      <button id="resetAll" class="ghost">Resetar Dados</button>
+      
+      <!-- Botão de Backup só aparece na PRO via checkLicense -->
+      <button id="backupBtn" class="ghost" onclick="toggleBackupMenu()">💾 Backup / Restore</button>
+      
       <button id="themeToggle" class="ghost" onclick="toggleTheme()">Tema</button>
       <button class="ghost" onclick="doLogout()">Sair</button>
     </div>
   </header>
+
+  <div id="backupMenu" class="card" style="display:none; margin-bottom:15px; padding:10px;">
+     <div style="font-weight:700; margin-bottom:8px">Gerenciar Backups</div>
+     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px">
+        <button id="exportJson" style="background:#0f766e; height:100%">
+          <div style="font-size:14px">⬇️ Backup do Sistema</div>
+          <div style="font-size:10px; opacity:0.8">(Salva arquivo para Restaurar)</div>
+        </button>
+        
+        <button onclick="document.getElementById('restoreInput').click()" style="background:#eab308; color:#111; height:100%">
+           <div style="font-size:14px">⬆️ Restaurar Backup</div>
+           <div style="font-size:10px; opacity:0.8">(Use o arquivo do Backup do Sistema)</div>
+        </button>
+     </div>
+     
+     <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:10px 0;">
+     
+     <div style="display:flex; gap:8px; align-items:center">
+        <button id="exportCsv" class="ghost" style="font-size:12px">📄 Exportar Planilha (Excel)</button>
+        <button id="resetAll" class="ghost" style="border-color:#c8102e; color:#c8102e; font-size:12px; margin-left:auto">Apagar Tudo</button>
+     </div>
+  </div>
 
   <main class="grid">
     <section>
@@ -174,16 +265,17 @@
           <div class="col"><label>Data</label><input type="date" id="data"></div>
         </div>
         <div style="display:flex;gap:6px">
-          <button id="addTx">Salvar e Enviar</button>
+          <button id="addTx">Salvar</button>
           <button id="updateTx" style="display:none">Salvar Edição</button>
           <button id="cancelEdit" class="ghost" style="display:none" onclick="cancelEdit()">Cancelar</button>
         </div>
         <input type="hidden" id="editingId">
-        <div style="font-size:10px; color:var(--muted); margin-top:8px; text-align:center">Dados são salvos localmente automaticamente. Adquira a versão -PRO- para opção de backup.</div>
+        <div style="font-size:10px; color:var(--muted); margin-top:8px; text-align:center">Dados salvos localmente.</div>
       </div>
     </aside>
   </main>
   <footer>The Box</footer>
+  <footer>2026</footer>
 </div>
 
 <div id="watermark-demo" style="display:none">Versão DEMO</div>
@@ -225,7 +317,7 @@
 
     <div class="grid">
       <div>
-        <div style="font-weight:700;margin-bottom:8px">Lista de Contas (Mês Selecionado)</div>
+        <div style="font-weight:700;margin-bottom:8px">Lista de Contas Mês</div>
         <div id="rec-list" class="list" style="max-height:500px"></div>
       </div>
       
@@ -251,7 +343,6 @@
 /* ==================================================
    CONFIGURAÇÃO DO GOOGLE SHEETS
    ================================================== */
-// INSIRA SUA URL CORRETA ABAIXO (não esqueça das aspas)
 const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyBHXsDV-_E8-CjFNjL8rD0hoVqayQwzXr_Qmbi3sqoa2GB6WKqM2wWSyJxdwqN3dC_/exec';
 
 function showToast(msg) {
@@ -262,19 +353,20 @@ function showToast(msg) {
 
 function syncToGoogle(payload) {
   if(!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL.includes('COLE_SUA')) return;
-  showToast("Registrando...");
+  if(!payload || Object.keys(payload).length === 0) return;
+  showToast("Sincronizando...");
   fetch(GOOGLE_SHEETS_URL, {
     method: 'POST', mode: 'no-cors',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
-  }).catch(err => console.error(err));
+  }).catch(err => console.error("Erro no envio:", err));
 }
 
 /* ==================================================
-   GESTÃO DE DADOS
+   GESTÃO DE DADOS & ISOLAMENTO
    ================================================== */
 let currentUser = null;
-let state = { tx: [], categories: [], recurring: [] }; 
+let state = { tx: [], categories: [], recurring: [], licenseKey: null }; 
 
 function getStorageKey() {
   if(!currentUser) return null;
@@ -286,12 +378,15 @@ function loadState() {
   if(!key) return;
   try {
     const raw = localStorage.getItem(key);
-    if(raw) state = JSON.parse(raw);
-    else state = { tx:[], categories:[], recurring:[] };
-    
+    if(raw) {
+      state = JSON.parse(raw);
+    } else {
+      state = { tx:[], categories:[], recurring:[], licenseKey: null };
+    }
     if(!state.recurring) state.recurring = [];
     if(!state.categories) state.categories = [];
     if(!state.tx) state.tx = [];
+    if(state.licenseKey === undefined) state.licenseKey = null; 
   } catch(e) { console.error(e); }
 }
 
@@ -301,9 +396,9 @@ function saveState() {
 }
 
 /* ==================================================
-   AUTENTICAÇÃO & RESET DE USUÁRIOS
+   AUTENTICAÇÃO & LOGIN
    ================================================== */
-const ADMIN_USER = { email: 'admin', pass: '1570', name: 'Master' };
+const ADMIN_USER = { email: 'admin', pass: '1570', name: 'Administrador' };
 
 function toggleAuth(view) {
   document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
@@ -324,11 +419,15 @@ function doLogin() {
 }
 
 function setUser(user) {
+  state = { tx:[], categories:[], recurring:[], licenseKey: null };
+  
   currentUser = user;
   sessionStorage.setItem('boxmotors_logged_user', JSON.stringify(user));
+  
   document.getElementById('auth-container').style.display = 'none';
   document.getElementById('app-content').style.display = 'block';
   document.getElementById('currentUserDisplay').textContent = `Logado: ${user.name || user.email}`;
+  
   loadState();
   initApp();
 }
@@ -336,7 +435,6 @@ function setUser(user) {
 function doLogout() {
   sessionStorage.removeItem('boxmotors_logged_user');
   currentUser = null;
-  state = { tx:[], categories:[], recurring:[] };
   location.reload();
 }
 
@@ -352,7 +450,6 @@ function doRegister() {
 
   btn.disabled = true; btn.textContent = "Salvando...";
   
-  const newUser = { name, email, phone, pass };
   syncToGoogle({ action: 'register', nome: name, email: email, telefone: phone, senha: pass });
 
   const localUsers = JSON.parse(localStorage.getItem('boxmotors_users_db') || '[]');
@@ -361,6 +458,7 @@ function doRegister() {
     btn.disabled = false; return;
   }
   
+  const newUser = { name, email, phone, pass };
   localUsers.push(newUser);
   localStorage.setItem('boxmotors_users_db', JSON.stringify(localUsers));
 
@@ -368,13 +466,10 @@ function doRegister() {
   setTimeout(() => { toggleAuth('login'); btn.disabled = false; status.textContent=''; }, 2000);
 }
 
-/* === NOVO: Função para Resetar Usuários === */
 function resetSystemUsers() {
   const password = prompt("Digite a senha do Admin para apagar todos os usuários cadastrados:");
-  
   if (password === "1570") {
-    if(confirm("TEM CERTEZA? Isso excluirá todos os logins criados (exceto o Admin).")) {
-      // Remove apenas o banco de usuários
+    if(confirm("TEM CERTEZA? Isso excluirá todos os logins criados.")) {
       localStorage.removeItem('boxmotors_users_db');
       alert("Base de usuários resetada com sucesso!");
       location.reload();
@@ -408,7 +503,7 @@ function ensureDefaults() {
 }
 
 function updateUI() {
-  renderTxList(); renderChart(); updateTotals();
+  renderTxList(); renderChart(); updateTotals(); checkLicense();
 }
 
 function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
@@ -434,10 +529,12 @@ function saveTx(id) {
   
   const existingIdx = state.tx.findIndex(t => t.id === id);
   
-  syncToGoogle({
-    action: 'transaction', userEmail: currentUser.email,
-    tipo: tipo, categoria: cat, descricao: desc, valor: val, data: dt
-  });
+  if(currentUser) {
+    syncToGoogle({
+      action: 'transaction', userEmail: currentUser.email,
+      tipo: tipo, categoria: cat, descricao: desc, valor: val, data: dt
+    });
+  }
 
   if(existingIdx >= 0) state.tx[existingIdx] = { id, tipo, categoria: cat, descricao: desc, valor: val, data: dt };
   else state.tx.push({ id, tipo, categoria: cat, descricao: desc, valor: val, data: dt });
@@ -537,7 +634,7 @@ function renderChart() {
     const w = (v/max) * (cv.width - 120);
     ctx.fillStyle = `hsl(${i*50}, 70%, 50%)`;
     ctx.fillRect(100, y, w, 20);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = document.body.getAttribute('data-theme') === 'light' ? '#000' : '#fff';
     ctx.fillText(k, 10, y+14);
     ctx.fillText(fmt(v), 100+w+5, y+14);
     y += 30;
@@ -545,44 +642,86 @@ function renderChart() {
 }
 
 /* ==================================================
-   CSV EXPORT (CORRIGIDO - PONTO E VÍRGULA)
+   BACKUP & EXPORT (JSON & CSV)
    ================================================== */
+function toggleBackupMenu() {
+  if (!isPro()) {
+    alert('Função disponível apenas na versão PRO.');
+    return;
+  }
+  const m = document.getElementById('backupMenu');
+  m.style.display = (m.style.display === 'none' || m.style.display === '') ? 'block' : 'none';
+}
+
+document.getElementById('exportJson').addEventListener('click', () => {
+  if(!isPro()) return alert('Backup é função PRO.');
+  const dataStr = JSON.stringify(state);
+  downloadFile(dataStr, 'json', 'application/json');
+});
+
 document.getElementById('exportCsv').addEventListener('click', () => {
-  // 1. Verificação de Licença (Se quiser liberar no demo, remova esta linha)
-  if(!localStorage.getItem('boxmotors_license_key')) return alert('Função disponível apenas na versão licenciada.');
-
-  if(!state.tx || state.tx.length === 0) return alert('Não há dados para exportar.');
-
-  // Cabeçalho com BOM (\uFEFF) para acentos e ponto-e-vírgula para Excel Brasil
+  if(!isPro()) return alert('Função PRO.');
+  if(!state.tx || state.tx.length === 0) return alert('Sem dados.');
   let csvContent = "\uFEFFID;Tipo;Categoria;Descrição;Valor;Data\n";
-
   state.tx.forEach(row => {
-     // Formatar valor para ter virgula decimal (padrão BR)
      let valBr = String(row.valor).replace('.', ',');
-     // Escapar aspas na descrição
      let desc = (row.descricao || '').replace(/"/g, '""');
-     
-     let rowString = `${row.id};${row.tipo};${row.categoria};"${desc}";${valBr};${row.data}`;
-     csvContent += rowString + "\n";
+     csvContent += `${row.id};${row.tipo};${row.categoria};"${desc}";${valBr};${row.data}\n`;
   });
+  downloadFile(csvContent, 'csv', 'text/csv;charset=utf-8;');
+});
 
-  // Download via Blob
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
+function downloadFile(content, ext, mime) {
+  const blob = new Blob([content], { type: mime });
   const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", `backup_financeiro_${new Date().toISOString().slice(0,10)}.csv`);
+  link.href = URL.createObjectURL(blob);
+  link.download = `boxmotors_backup_${new Date().toISOString().slice(0,10)}.${ext}`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-});
+}
+
+function processRestore(input) {
+  if(!isPro()) { input.value = ''; return alert('Restaurar é função PRO.'); }
+  
+  const file = input.files[0];
+  if (!file) return;
+
+  if (!file.name.endsWith('.json')) {
+      alert("ERRO: Por favor selecione o arquivo de Backup do Sistema (.json).\n\nO arquivo CSV (Planilha) serve apenas para o Excel e não pode ser restaurado.");
+      input.value = '';
+      return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedState = JSON.parse(e.target.result);
+      
+      if(Array.isArray(importedState.tx)) {
+         if(confirm("Isso irá SUBSTITUIR seus dados atuais pelos do backup. Continuar?")) {
+            const currentLicense = state.licenseKey;
+            state = importedState;
+            if(currentLicense === 'BOXPRO') state.licenseKey = 'BOXPRO';
+            saveState();
+            alert("Dados restaurados com sucesso!");
+            location.reload();
+         }
+      } else {
+        alert("Arquivo inválido.");
+      }
+    } catch(err) {
+      alert("Erro ao ler arquivo: " + err);
+    }
+  };
+  reader.readAsText(file);
+}
 
 /* ==================================================
-   GESTÃO DE RECORRENTES (COM HISTÓRICO MENSAL)
+   GESTÃO DE RECORRENTES
    ================================================== */
 let recFocusDate = new Date();
 
-// Cria uma chave única para o mês (ex: "2025-11")
 function getMonthKey(d) {
   return d.getFullYear() + '-' + (d.getMonth()+1);
 }
@@ -618,9 +757,8 @@ function closePages() {
   ensureDefaults(); 
 }
 
-// SALVAR REGRA DE RECORRÊNCIA
 function saveRecurring() {
-  const id = document.getElementById('recEditId').value; // Vazio se novo
+  const id = document.getElementById('recEditId').value; 
   const desc = document.getElementById('recDesc').value.trim();
   const val = Number(document.getElementById('recValor').value);
   const dia = document.getElementById('recDia').value;
@@ -629,14 +767,13 @@ function saveRecurring() {
 
   if(!state.recurring) state.recurring = [];
 
-  // Objeto da regra
+  const existing = id ? state.recurring.find(r=>r.id===id) : null;
   const newItem = { 
     id: id || uid(), 
     desc: desc, 
     valor: val, 
     dia: dia,
-    // Mantém histórico existente se for edição, ou cria novo objeto vazio
-    history: (id && state.recurring.find(r=>r.id===id)) ? state.recurring.find(r=>r.id===id).history : {} 
+    history: existing && existing.history ? existing.history : {} 
   };
 
   if(id) {
@@ -667,28 +804,20 @@ function editRec(id) {
 }
 
 function deleteRec(id) {
-  if(confirm('Apagar esta regra recorrente? O histórico será perdido.')) {
+  if(confirm('Apagar esta regra recorrente?')) {
     state.recurring = state.recurring.filter(r => r.id !== id);
     saveState(); renderRecList();
     resetRecForm();
   }
 }
 
-// MARCAR PAGO/PENDENTE SOMENTE NO MÊS ATUAL
 function markRecPaid(id) {
   const r = state.recurring.find(x => x.id === id);
   if(!r) return;
-
-  // Garante que existe objeto de historico
   if(!r.history) r.history = {};
-
   const key = getMonthKey(recFocusDate);
   const currentStatus = r.history[key] || 'pendente';
-  
-  // Alterna status
-  const newStatus = currentStatus === 'pago' ? 'pendente' : 'pago';
-  r.history[key] = newStatus;
-
+  r.history[key] = currentStatus === 'pago' ? 'pendente' : 'pago';
   saveState();
   renderRecList();
 }
@@ -699,33 +828,28 @@ function resetRecForm() {
   document.getElementById('recDia').value='';
   document.getElementById('recEditId').value=''; 
   document.getElementById('recFormTitle').textContent = "Nova Recorrente";
-  document.getElementById('btnSaveRec').textContent = "Salvar";
+  document.getElementById('btnSaveRec').textContent = "Salvar Regra";
   document.getElementById('btnCancelRec').style.display = "none";
 }
 
 function renderRecList() {
   const el = document.getElementById('rec-list');
   el.innerHTML = '';
-  
   let total = 0, paid = 0, pending = 0;
   const key = getMonthKey(recFocusDate);
 
   if(state.recurring && state.recurring.length > 0) {
     state.recurring.forEach(r => {
-      // Verifica status neste mês específico
       const statusNoMes = (r.history && r.history[key]) ? r.history[key] : 'pendente';
-
       total += r.valor;
       if(statusNoMes === 'pago') paid += r.valor;
       else pending += r.valor;
 
       const dueDay = Number(r.dia) || '-';
-      const dueLabel = `Dia ${dueDay}`;
-
       el.innerHTML += `
         <div class="rec-item">
           <div class="meta">
-             <div><div style="font-weight:600">${r.desc}</div><div class="small">${dueLabel}</div></div>
+             <div><div style="font-weight:600">${r.desc}</div><div class="small">Dia ${dueDay}</div></div>
              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
                <span class="tag ${statusNoMes}">${statusNoMes}</span>
                <div style="display:flex;gap:6px">
@@ -739,7 +863,7 @@ function renderRecList() {
         </div>`;
     });
   } else {
-    el.innerHTML = '<div class="small" style="text-align:center;padding:10px">Nenhuma conta fixa cadastrada.</div>';
+    el.innerHTML = '<div class="small" style="text-align:center;padding:10px">Nenhuma conta fixa.</div>';
   }
   document.getElementById('recTotal').textContent = fmt(total);
   document.getElementById('recPaid').textContent = fmt(paid);
@@ -776,43 +900,72 @@ function delCat(i) {
 }
 
 const DEMO_LIMIT = 10;
+
+function isPro() {
+  return state.licenseKey === 'BOXPRO';
+}
+
 function checkLicense() {
-  const k = localStorage.getItem('boxmotors_license_key');
-  if(k) {
+  const backupBtn = document.getElementById('backupBtn');
+
+  if(isPro()) {
     document.getElementById('demoBadge').style.display='none';
     document.getElementById('licenseKey').style.display='none';
-    document.getElementById('buyBtn').innerText='Licenciado';
-    document.getElementById('revokeBtn').style.display='inline-block';
-    document.getElementById('resetAll').disabled = false;
+    document.getElementById('buyBtn').style.display='none'; 
+    document.getElementById('licenseRow').style.display='none'; 
+    document.getElementById('proMenu').style.display='flex'; 
+    document.getElementById('watermark-demo').style.display='none';
+    if (backupBtn) backupBtn.style.display = 'inline-flex';
   } else {
-    document.getElementById('resetAll').disabled = true;
+    document.getElementById('demoBadge').style.display='inline-block';
+    document.getElementById('licenseKey').style.display='inline-block';
+    document.getElementById('buyBtn').style.display='inline-block';
+    document.getElementById('licenseRow').style.display='inline-flex';
+    document.getElementById('proMenu').style.display='none';
+    document.getElementById('watermark-demo').style.display='block';
+    if (backupBtn) backupBtn.style.display = 'none';
   }
 }
+
 function canAdd() {
-  if(localStorage.getItem('boxmotors_license_key')) return true;
+  if(isPro()) return true;
   if(state.tx.length >= DEMO_LIMIT) {
-    if(confirm('Limite DEMO. Comprar?')) openLink();
+    if(confirm('Limite DEMO atingido (10 transações). Adquira a versão PRO.')) openLink();
     return false;
   }
   return true;
 }
+
 function activateLicense() {
   const k = document.getElementById('licenseKey').value;
   if(k === 'BOXPRO') { 
-    localStorage.setItem('boxmotors_license_key', k);
-    alert('Sucesso!'); location.reload();
+    state.licenseKey = k;
+    saveState();
+    alert('Licença PRO Ativada com Sucesso!');
+    location.reload();
   } else alert('Chave inválida');
 }
+
 function revokeLicense() {
-  localStorage.removeItem('boxmotors_license_key'); location.reload();
+  if(confirm("Deseja desativar a licença deste usuário?")) {
+    state.licenseKey = null;
+    saveState();
+    location.reload();
+  }
 }
+
 function openLink() { window.open('https://linktr.ee/BoxMotors'); }
 
 document.getElementById('resetAll').addEventListener('click', () => {
-  if(!localStorage.getItem('boxmotors_license_key')) return alert('Função PRO apenas.');
-  if(confirm('TEM CERTEZA? Apagará todos os dados deste usuário.')) {
-    state = { tx:[], categories:[], recurring:[] };
-    saveState(); location.reload();
+  if (!isPro()) {
+    alert('Função disponível apenas na versão PRO.');
+    return;
+  }
+  if(confirm('TEM CERTEZA? Apagará todos os lançamentos, categorias e recorrentes.')) {
+    const savedLicense = state.licenseKey;
+    state = { tx:[], categories:[...DEFAULT_CATS], recurring:[], licenseKey: savedLicense };
+    saveState(); 
+    location.reload();
   }
 });
 
